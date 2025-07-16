@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { Text, View } from "react-native";
 
 export default function Index() {
@@ -10,6 +11,7 @@ export default function Index() {
       }}
     >
       <Text className="text-3xl font-pblack">Aora.!</Text>
+      <Link href="/home"> Go to Home</Link>
     </View>
   );
 }

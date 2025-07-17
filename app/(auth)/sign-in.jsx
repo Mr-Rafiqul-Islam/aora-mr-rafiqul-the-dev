@@ -5,14 +5,16 @@ import { useState } from "react";
 import FormField from "../../components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
-import { signIn } from "../../lib/appwrite"
+import { checkActiveSession, deleteSessions, getCurrentUser, signIn } from "../../lib/appwrite"
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email:"",
     password:""
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {setUser, setIsLoggedIn} = useGlobalContext();
   const handleSubmit = async () => {
       if (
         formData.email === "" ||
@@ -22,12 +24,22 @@ const SignIn = () => {
       }
       setIsSubmitting(true);
       try {
+        // Check for an active session
+      const activeSession = await checkActiveSession();
+
+      if (activeSession) {
+        // Delete the active sessions if one exists
+        await deleteSessions();
+      }
          await signIn(
           formData.email,
           formData.password,
         );
-  
+        const result = await getCurrentUser();
+        setUser(result);
+        setIsLoggedIn(true);
         //  set it to global context later
+        Alert.alert("Success", "User signed in successfully");
   
         router.replace("/home");
       } catch (error) {

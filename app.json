@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "package":"com.mr-rafiqulthedev.aora"
+      "package": "com.mr-rafiqulthedev.aora"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package":"com.mr-rafiqulthedev.aora"
+      "package": "com.mr-rafiqulthedev.aora"
     },
     "web": {
       "bundler": "metro",
@@ -35,7 +35,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true

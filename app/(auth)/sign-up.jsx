@@ -5,7 +5,7 @@ import { useState } from "react";
 import FormField from "../../components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link, router } from "expo-router";
-import { createUser } from "@/lib/appwrite";
+import { checkActiveSession, createUser, deleteSessions } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 const SignUp = () => {
@@ -25,7 +25,15 @@ const SignUp = () => {
       Alert.alert("Error", "Please fill in all fields");
     }
     setIsSubmitting(true);
+
     try {
+      // Check for an active session
+      const activeSession = await checkActiveSession();
+
+      if (activeSession) {
+        // Delete the active sessions if one exists
+        await deleteSessions();
+      }
       const result = await createUser(
         formData.email,
         formData.password,

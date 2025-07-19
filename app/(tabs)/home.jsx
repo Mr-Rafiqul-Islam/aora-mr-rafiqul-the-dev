@@ -1,5 +1,5 @@
 import { FlatList, Image, RefreshControl, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { getAllPosts, getLatestPosts } from '@/lib/appwrite';
 import useAppwrite from '@/lib/useAppwrite';
@@ -14,6 +14,10 @@ const Home = () => {
   const { data: latestPosts } = useAppwrite(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
 
+  // for tracking currently playing video
+    const [currentlyPlayingId, setCurrentlyPlayingId] = useState(null);
+    const postsPlayersMap = useRef({});
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
@@ -27,6 +31,9 @@ const Home = () => {
         renderItem={({ item }) => (
           <VideoCard
             video={item}
+            currentlyPlayingId={currentlyPlayingId}
+          setCurrentlyPlayingId={setCurrentlyPlayingId}
+          postsPlayersMap={postsPlayersMap}
           />
         )}
         ListHeaderComponent={() => (

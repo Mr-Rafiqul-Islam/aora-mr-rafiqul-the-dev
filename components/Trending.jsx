@@ -3,6 +3,7 @@ import { FlatList } from "react-native";
 import TrendingItem from "./TrendingItem";
 
 const Trending = ({ posts }) => {
+  // for tracking currently playing video
   const [activeItem, setActiveItem] = useState(posts[0]?.$id);
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState(null);
   const playersMap = useRef({});

@@ -1,5 +1,6 @@
 import { icons } from "@/constants";
-import { useState } from "react";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
 const VideoCard = ({
@@ -8,9 +9,47 @@ const VideoCard = ({
     thumbnail,
     video,
     creator: { username, avatar },
+    $id,
   },
+  currentlyPlayingId,
+  setCurrentlyPlayingId,
+  postsPlayersMap,
 }) => {
   const [play, setPlay] = useState(false);
+  const player = useVideoPlayer(video, (p) => {
+    p.loop = false;
+  });
+
+  // Register player in global map
+  const map = postsPlayersMap.current;
+  useEffect(() => {
+    const entry = { player, setPlay };
+    map[$id] = entry;
+
+    return () => {
+      if (map[$id] === entry) {
+        delete map[$id];
+      }
+    };
+  }, [$id, player, map]);
+
+  const handlePlay = () => {
+    if (
+      currentlyPlayingId &&
+      postsPlayersMap.current[currentlyPlayingId] &&
+      currentlyPlayingId !== $id
+    ) {
+      const prev = postsPlayersMap.current[currentlyPlayingId];
+      prev.player.pause();
+      prev.player.currentTime = 0; // ✅ reset previous video
+      prev.setPlay(false);
+    }
+
+    setPlay(true);
+    setCurrentlyPlayingId($id);
+    player.currentTime = 0; // ✅ reset current video before playing
+    player.play();
+  };
 
   return (
     <View className="flex flex-col items-center px-4 mb-14">
@@ -46,25 +85,18 @@ const VideoCard = ({
       </View>
 
       {play ? (
-        // <Video
-        //   source={{ uri: video }}
-        //   className="w-full h-60 rounded-xl mt-3"
-        //   resizeMode={ResizeMode.CONTAIN}
-        //   useNativeControls
-        //   shouldPlay
-        //   onPlaybackStatusUpdate={(status) => {
-        //     if (status.didJustFinish) {
-        //       setPlay(false);
-        //     }
-        //   }}
-        // />
-        <TouchableOpacity onPress={() => setPlay(false)}>
-          <Text className="text-white text-2xl animate-pulse">Playing...</Text>
-        </TouchableOpacity>
+        <View className="w-full h-60 rounded-xl mt-3 bg-white/10 overflow-hidden">
+          <VideoView
+            player={player}
+            style={{ width: "100%", height: "100%", borderRadius: 12 }}
+            allowsFullscreen
+            allowsPictureInPicture
+          />
+        </View>
       ) : (
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => setPlay(true)}
+          onPress={handlePlay}
           className="w-full h-60 rounded-xl mt-3 relative flex justify-center items-center"
         >
           <Image

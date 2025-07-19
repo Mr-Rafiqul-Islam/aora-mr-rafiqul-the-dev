@@ -8,10 +8,12 @@ import EmptyState from '@/components/EmptyState';
 import VideoCard from '@/components/VideoCard';
 import SearchInput from '@/components/SearchInput';
 import Trending from '@/components/Trending';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
+  const {user}=useGlobalContext();
   const [refreshing, setRefreshing] = useState(false);
 
   // for tracking currently playing video
@@ -44,7 +46,7 @@ const Home = () => {
                   Welcome Back
                 </Text>
                 <Text className="text-2xl font-psemibold text-white">
-                  JSMastery
+                  {user?.username}
                 </Text>
               </View>
 
